@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 import pandas as pd
 import os
+import pytz
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -29,8 +30,9 @@ logger = logging.getLogger(__name__)
 class WesternUnionScraper:
     def __init__(self):
         self.setup_chrome_options()
-        # Create a new CSV file for each run, named with the current date
-        date_str = datetime.now().strftime('%Y-%m-%d')
+        # Use Tunisia time for the CSV filename
+        tz = pytz.timezone('Africa/Tunis')
+        date_str = datetime.now(tz).strftime('%Y-%m-%d')
         self.results_file = f'exchange_rates_for_{date_str}.csv'
         self.max_retries = 3
         self.delay_between_requests = 3
@@ -382,7 +384,8 @@ class WesternUnionScraper:
             logger.error(f"Failed to send email: {e}")
 
     def scrape_and_save(self):
-        current_time = datetime.now()
+        tz = pytz.timezone('Africa/Tunis')
+        current_time = datetime.now(tz)
         results = []
         for pair in self.currency_pairs:
             try:
@@ -400,7 +403,8 @@ class WesternUnionScraper:
                 else:
                     rate = self.get_rate(pair['url'])
                 results.append({
-                    'datetime': current_time,
+                    'datetime': current_time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'indice': current_time.strftime('%H:%M (Tunisia)'),
                     'currency_pair': pair['pair'],
                     'provider': provider,
                     'rate': rate
