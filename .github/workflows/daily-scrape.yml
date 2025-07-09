@@ -13,7 +13,7 @@ jobs:
   run-scraper:
     runs-on: ubuntu-latest
     
-    # Prevent concurrent runs to avoid conflicts
+    # CRITICAL: Prevent concurrent runs
     concurrency:
       group: exchange-rate-scraper
       cancel-in-progress: false
@@ -21,8 +21,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -41,10 +39,7 @@ jobs:
         run: python exchange_rate_scraper.py
 
       - name: Commit and push if changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'Update CSV with new exchange rates'
           file_pattern: western_union_rates.csv
-          commit_user_name: github-actions[bot]
-          commit_user_email: github-actions[bot]@users.noreply.github.com
-          commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
