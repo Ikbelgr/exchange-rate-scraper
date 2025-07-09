@@ -120,12 +120,17 @@ class WesternUnionScraper:
 
     def get_chromedriver_path(self):
         driver_path = ChromeDriverManager().install()
-        if driver_path.endswith('.exe') and os.path.isfile(driver_path):
+        if os.path.isfile(driver_path):
             return driver_path
+        # For Windows, check for .exe
         exe_path = os.path.join(os.path.dirname(driver_path), 'chromedriver.exe')
         if os.path.isfile(exe_path):
             return exe_path
-        raise Exception('Could not find a valid chromedriver.exe')
+        # For Linux/Mac, check for 'chromedriver' without extension
+        unix_path = os.path.join(os.path.dirname(driver_path), 'chromedriver')
+        if os.path.isfile(unix_path):
+            return unix_path
+        raise Exception('Could not find a valid chromedriver')
 
     def get_rate(self, url: str, amount: float = 100) -> float:
         driver = None

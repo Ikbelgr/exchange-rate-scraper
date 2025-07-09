@@ -2,8 +2,8 @@ name: Daily Exchange Rate Scraper
 
 on:
   schedule:
-    # Runs at 7:00 UTC every day
-    - cron: '0 7 * * *'
+    # Runs every 30 minutes
+    - cron: '*/30 * * * *'
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
