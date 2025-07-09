@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -38,7 +38,11 @@ jobs:
           EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
         run: python exchange_rate_scraper.py
 
-      - name: Fetch latest changes
+      - name: Stage CSV before rebase
+        run: |
+          git add western_union_rates.csv
+
+      - name: Fetch latest changes and rebase
         run: |
           git fetch origin main
           git rebase origin/main
@@ -47,6 +51,5 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add western_union_rates.csv
           git commit -m "Update CSV with new exchange rates" || echo "No changes to commit"
           git push
