@@ -32,24 +32,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas selenium webdriver-manager
 
+      - name: Fetch latest changes and rebase
+        run: |
+          git fetch origin main
+          git rebase origin/main
+
       - name: Run the scraper
         env:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
         run: python exchange_rate_scraper.py
 
-      - name: Stage CSV before rebase
-        run: |
-          git add western_union_rates.csv
-
-      - name: Fetch latest changes and rebase
-        run: |
-          git fetch origin main
-          git rebase origin/main
-
       - name: Commit and push updated CSV
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add western_union_rates.csv
           git commit -m "Update CSV with new exchange rates" || echo "No changes to commit"
           git push
