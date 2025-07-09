@@ -4,25 +4,18 @@ on:
   schedule:
     # Runs every 30 minutes
     - cron: '*/30 * * * *'
-  workflow_dispatch:  # Allows manual trigger
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
-    
-    # CRITICAL: Prevent concurrent runs
-    concurrency:
-      group: exchange-rate-scraper
-      cancel-in-progress: false
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          clean: true
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -34,21 +27,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas selenium webdriver-manager
 
-      - name: Fetch latest changes and rebase
-        run: |
-          git fetch origin main
-          git rebase origin/main
-
       - name: Run the scraper
         env:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
         run: python exchange_rate_scraper.py
-
-      - name: Commit and push updated CSV
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add western_union_rates.csv
-          git commit -m "Update CSV with new exchange rates" || echo "No changes to commit"
-          git push

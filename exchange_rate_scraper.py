@@ -29,7 +29,9 @@ logger = logging.getLogger(__name__)
 class WesternUnionScraper:
     def __init__(self):
         self.setup_chrome_options()
-        self.results_file = 'western_union_rates.csv'
+        # Create a new CSV file for each run, named with the current date
+        date_str = datetime.now().strftime('%Y-%m-%d')
+        self.results_file = f'exchange_rates_for_{date_str}.csv'
         self.max_retries = 3
         self.delay_between_requests = 3
         self.page_load_timeout = 30
@@ -407,12 +409,8 @@ class WesternUnionScraper:
                 logger.error(f"Error scraping {pair['pair']} ({provider}): {e}")
         if results:
             df = pd.DataFrame(results)
-            if os.path.exists(self.results_file):
-                df.to_csv(self.results_file, mode='a', header=False, index=False)
-                logger.info(f"Appended rates to {self.results_file}")
-            else:
-                df.to_csv(self.results_file, index=False)
-                logger.info(f"Created {self.results_file} with rates")
+            df.to_csv(self.results_file, index=False)
+            logger.info(f"Created {self.results_file} with rates")
             # Send email with the CSV file
             self.send_email_with_attachment(
                 to_email="ikbeghrab13@gmail.com",
