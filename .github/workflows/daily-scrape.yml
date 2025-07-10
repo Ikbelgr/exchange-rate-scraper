@@ -2,8 +2,8 @@ name: Daily Exchange Rate Scraper
 
 on:
   schedule:
-    # Runs every 30 minutes
-    - cron: '*/30 * * * *'
+    # Runs every day at 7 AM Tunisia time (6 AM UTC)
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 permissions:

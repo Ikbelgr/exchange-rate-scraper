@@ -366,7 +366,11 @@ class WesternUnionScraper:
 
         msg = EmailMessage()
         msg["From"] = sender_email
-        msg["To"] = to_email
+        # Support both string and list for to_email
+        if isinstance(to_email, list):
+            msg["To"] = ", ".join(to_email)
+        else:
+            msg["To"] = to_email
         msg["Subject"] = subject
         msg.set_content(body)
 
@@ -417,7 +421,7 @@ class WesternUnionScraper:
             logger.info(f"Created {self.results_file} with rates")
             # Send email with the CSV file
             self.send_email_with_attachment(
-                to_email="ikbeghrab13@gmail.com",
+                to_email=["nouha@myeasytransfer.com", "ikbelghrab13@gmail.com"],
                 subject="Exchange Rates",
                 body="Hello, Here are the updated exchange rates for today.",
                 attachment_path=self.results_file
